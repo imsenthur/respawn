@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class playerMotor : MonoBehaviour
 {
+    public float fireRate = 0.1f;
+    public float damage = 10;
+    private float timeToSpawnEffect = 0;
+    public float effectSpawnRate = 10;
+    public LayerMask tohit;
+
+    float timeToFire = 0;
+    public Transform firepoint;
+    public Transform bulletTrail;
+    public Transform muzzleFlash;
+
     public float movementThresh = 0.7f; //override
     public float aimThresh = 0.1f; //override
     public float speed = 1; //override
@@ -76,6 +87,23 @@ public class playerMotor : MonoBehaviour
         {
             moveVel = Vector2.zero;
         }
+
+        if (fireRate == 0)
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                shoot();
+            }
+        }
+        else
+        {
+            if (Input.GetButton("Fire1") && Time.time > timeToFire)
+            {
+                timeToFire = Time.time + 1 / fireRate;
+                shoot();
+            }
+
+        }
     }
 
     private void FixedUpdate()
@@ -87,6 +115,37 @@ public class playerMotor : MonoBehaviour
     private void setWeaponRange()
     {
         hair.transform.localPosition = new Vector3(weaponRange, 0, 0);
+    }
+
+    void shoot()
+    {
+        Vector2 firePos = new Vector2(firepoint.position.x, firepoint.position.y);
+        Vector2 cPos = new Vector2(hair.transform.position.x, hair.transform.position.y);
+        RaycastHit2D hit = Physics2D.Raycast(firePos, cPos - firePos, 100, tohit);
+        if(Time.time > timeToSpawnEffect)
+        {
+            bulletEffect();
+            timeToSpawnEffect = Time.time + 1 / effectSpawnRate;
+        }
+        
+
+        if(hit.collider != null)
+        {
+            //Debug.Log(hit.collider.name);
+        }
+
+    }
+
+    void bulletEffect()
+    {
+        Instantiate(bulletTrail, firepoint.position, firepoint.rotation);
+        Transform muzzleInstance = Instantiate(muzzleFlash, firepoint.position, firepoint.rotation) as Transform;
+        muzzleInstance.parent = firepoint;
+        float size = Random.Range(0.6f, 1.0f);
+        muzzleInstance.localScale = new Vector3(size, size, 1);
+
+        Destroy(muzzleInstance.gameObject, 0.02f);
+
     }
 
 }
