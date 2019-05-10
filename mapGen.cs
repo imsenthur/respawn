@@ -21,6 +21,7 @@ public class mapGen : MonoBehaviour
     private float halfCamHeight;
 
     public Tilemap tilemapGrid;
+    public Tilemap colliderGrid;
     private Vector3 pos;
 
     private void Start()
@@ -108,45 +109,81 @@ public class mapGen : MonoBehaviour
     void GenerateTile(int x, int y)
     {
         Color32 pixelColor = map.GetPixel(x, y);
+        Vector3Int currentCell = new Vector3Int(x, y, 0);
+        Color32 red = Color.red;
 
         if (pixelColor.a == 0)
         {
             // The pixel is transparrent. Let's ignore it!
             return;
         }
-
-        foreach (colorToTile colorMapping in colorMappings)
+        else if (pixelColor.Equals(red))
         {
-
             Tile tileSprite = ScriptableObject.CreateInstance<Tile>();
-            if (colorMapping.color.Equals(pixelColor))
+            foreach (colorToTile colorMapping in colorMappings)
             {
-                //Debug.Log(pixelColor);
-                tileSprite.sprite = colorMapping.tile;
-
-                Vector3Int currentCell = new Vector3Int(x, y, 0);
-                tilemapGrid.SetTile(currentCell, tileSprite);
+                if (colorMapping.color.Equals(pixelColor))
+                {
+                    //Debug.Log(pixelColor);
+                    tileSprite.sprite = colorMapping.tile;
+                    colliderGrid.SetTile(currentCell, tileSprite);
+                }
+            }
+            return;
+        }
+        else
+        {
+            Tile tileSprite = ScriptableObject.CreateInstance<Tile>();
+            foreach (colorToTile colorMapping in colorMappings)
+            {
+                if (colorMapping.color.Equals(pixelColor))
+                {
+                    //Debug.Log(pixelColor);
+                    tileSprite.sprite = colorMapping.tile;
+                    tilemapGrid.SetTile(currentCell, tileSprite);
+                }
             }
         }
+
+ 
+
+
     }
     void degenerateTile(int x, int y)
     {
         Color32 pixelColor = map.GetPixel(x, y);
+        Vector3Int currentCell = new Vector3Int(x, y, 0);
+        Color32 red = Color.red;
 
         if (pixelColor.a == 0)
         {
             // The pixel is transparrent. Let's ignore it!
             return;
         }
-
-        foreach (colorToTile colorMapping in colorMappings)
+        else if (pixelColor.Equals(red))
         {
-            if (colorMapping.color.Equals(pixelColor))
+            foreach (colorToTile colorMapping in colorMappings)
             {
-                Vector3Int currentCell = new Vector3Int(x, y, 0);
-                tilemapGrid.SetTile(currentCell, null);
+                if (colorMapping.color.Equals(pixelColor))
+                {
+                    colliderGrid.SetTile(currentCell, null);
+                }
+            }
+            return;
+        }
+        else
+        {
+            foreach (colorToTile colorMapping in colorMappings)
+            {
+                if (colorMapping.color.Equals(pixelColor))
+                {
+
+                    tilemapGrid.SetTile(currentCell, null);
+                }
             }
         }
+
+
     }
     int subWidth(int x, int c)
     {

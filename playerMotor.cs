@@ -17,7 +17,6 @@ public class playerMotor : MonoBehaviour
 
     public GameObject sprite;
     public GameObject hair;
-    private float theta = 0;
     public float weaponRange = 2; //override
 
     private Vector2 lscale;
@@ -81,7 +80,7 @@ public class playerMotor : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rgbd.MovePosition(rgbd.position + moveVel * Time.fixedDeltaTime);
+        rgbd.velocity = moveVel;
 
     }
 
