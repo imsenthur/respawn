@@ -124,27 +124,30 @@ public class playerMotor : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(firePos, cPos - firePos, 100, tohit);
         if(Time.time > timeToSpawnEffect)
         {
-            bulletEffect();
+            bulletEffect(hit);
             timeToSpawnEffect = Time.time + 1 / effectSpawnRate;
         }
-        
-
-        if(hit.collider != null)
-        {
-            //Debug.Log(hit.collider.name);
-        }
-
     }
 
-    void bulletEffect()
+    void bulletEffect(RaycastHit2D hit)
     {
-        Instantiate(bulletTrail, firepoint.position, firepoint.rotation);
+        Transform bullet = Instantiate(bulletTrail, firepoint.position, firepoint.rotation) as Transform;
+        if (hit.collider != null)
+        {
+            //Debug.Log(hit.point);
+            bullet.gameObject.GetComponent<bulletScript>().setEndPos(hit.point, firepoint.position, true);
+        }
+        else
+        {
+            bullet.gameObject.GetComponent<bulletScript>().setEndPos(Vector2.zero, firepoint.position, false);
+        }
         Transform muzzleInstance = Instantiate(muzzleFlash, firepoint.position, firepoint.rotation) as Transform;
         muzzleInstance.parent = firepoint;
         float size = Random.Range(0.6f, 1.0f);
         muzzleInstance.localScale = new Vector3(size, size, 1);
 
         Destroy(muzzleInstance.gameObject, 0.02f);
+
 
     }
 
