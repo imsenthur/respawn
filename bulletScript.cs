@@ -9,6 +9,7 @@ public class bulletScript : MonoBehaviour
     private Vector2 iniPos;
     private Vector2 cPos;
     public float maxBulletDrop = 20;
+    public Transform explo;
     public bool hit = false;
     // Update is called once per frame
 
@@ -17,8 +18,17 @@ public class bulletScript : MonoBehaviour
         transform.Translate(Vector3.right * Time.deltaTime * bulletSpeed);
         cPos = new Vector2(transform.position.x, transform.position.y) - iniPos;
 
-        if(cPos.magnitude > endPos.magnitude + 0.5f)
-        Destroy(gameObject);
+        if(cPos.magnitude > endPos.magnitude + 0.25f)
+        {
+            Transform exlposion = Instantiate(explo, (endPos + iniPos), Quaternion.identity) as Transform;
+            float size = Random.Range(0.8f, 1.0f);
+            exlposion.localScale = new Vector3(size, size, 1);
+
+            Destroy(exlposion.gameObject, 0.2f);
+
+            Destroy(gameObject);
+        }
+        
     }
 
     public void setEndPos(Vector2 end, Vector2 start, bool ifHit)
